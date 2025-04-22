@@ -1,0 +1,118 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأذكار</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #2e4053, #4a6076);
+            font-family: 'Arial', sans-serif;
+            color: #ecf0f1;
+            text-align: center;
+            direction: rtl;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            max-width: 80%;
+        }
+
+        li {
+            font-size: 22px;
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+
+        button {
+            padding: 15px 30px;
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #2c3e50;
+            background-color: #a3e4d7;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #76d7c4;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+    <h1>أذكار لإطفاء لهب الشهوة</h1>
+    <ul>
+        <li>أعوذ بالله من الشيطان الرجيم</li>
+        <li>اللهم طهر قلبي ، و حصن فرجي ، و إغفر ذنبي ، إنه لا يغفر الذنوب إلا أنت ، إنك أنت الغفور الرحيم</1i>
+        <li>حسبي الله لا إله إلا هو، عليه توكلت وهو رب العرش العظيم</li>
+        <li>اللهم إني أعوذ بك من شر نفسي ومن شر الشيطان وشركه</li>
+        <li>لا إله إلا الله وحده لا شريك له، له الملك وله الحمد وهو على كل شيء قدير</li>
+        <li>اللهم إني أسألك العفة والتقى والنقاء</li>
+        <li>ربنا آتنا في الدنيا حسنة وفي الآخرة حسنة وقنا عذاب النار</li>
+        <li>اللهم اجعل في قلبي نورًا، وفي بصري نورًا، وفي سمعي نورًا</li>
+        <li>سبحان الله، والحمد لله، ولا إله إلا الله، والله أكبر</li>
+        <li>اللهم إني أعوذ بك من الفتن ما ظهر منها وما بطن</li>
+        <li>أستغفر الله الذي لا إله إلا هو الحي القيوم وأتوب إليه</li>
+    </ul>
+    <button onclick="window.location.href='index.html'">العودة للصفحة الرئيسية</button>
+</body>
+</html>
